@@ -12,10 +12,12 @@ To run:
 
     bash setup.sh
 
-* use this command to play with the files from the command line
+* use this command to play with the files from the command line and test commands
 
     sbt console
 
-* or to run the file in /src/main/scala us
+* to run the file in /src/main/scala/assign1.scala use
 
     sbt run
+
+* edit /src/main/scala/assign1.scala to save progress
