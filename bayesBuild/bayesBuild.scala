@@ -71,13 +71,8 @@ class Matrix {
     if (diff > 0){
       println("diff = "+diff)
       /*Create filler array to augment existing columns*/
-      var diff_fill_int = Array.fill(diff)(0);
-      var diff_fill = new Array[Float] (0);
-      for (e <- diff_fill_int){
-	var e_float = Array(e.toFloat);
-	diff_fill = Array.concat(diff_fill,e_float); 
-      }
-		
+      var diff_fill = new Array[Float](diff)
+
       /*Take existing columns, augment them, and bind them to master
        First prepare each column*/	
       var width = master(0,?).length;
