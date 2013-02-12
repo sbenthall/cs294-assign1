@@ -104,22 +104,17 @@ object bayesBuild{
   val main_dir = "/home/sb/ischool/cs294/assign1/bayesBuild/Test/";
   val classes = List("neg","pos");
 
-  def main(args: Array[String]) {
-    for(c <- classes){
-      val class_dir = main_dir + "/" + c
+  def buildMatrix(c : String): Matrix = { 
+      val class_dir = main_dir + "/" + c;
       val doclist = new File(class_dir).listFiles();
 
       var dict = new Dictionary();
       
       var mat = new Matrix();
-      mat.matrixsayhi();
-      
-      for (doc <- doclist){
-        println(doc);
 
+      for (doc <- doclist){
         var pathlist = List(class_dir, doc.getName());
         var filepath = pathlist.mkString("/");
-        println(filepath);
         var currdoc = new DocObject(filepath);
         currdoc.dictUpdater(dict);
         var add = currdoc.matrixExporter(dict);
@@ -127,8 +122,13 @@ object bayesBuild{
         
         currdoc.dictresetter(dict);
       }
-      
-      print(mat.master)
-    } 
+    print(mat);
+    return mat;
+  }
+
+  def main(args: Array[String]) {
+    var mats = classes.map(buildMatrix)
+
+
   }
 }
