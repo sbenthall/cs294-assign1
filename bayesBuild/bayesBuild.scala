@@ -61,7 +61,7 @@ class Matrix {
 	
   def matrixUpdater(vector: Iterable[Int]) ={
     var newdoclength = vector.size;
-    var currmatlength = master(?,0).length;
+    var currmatlength = master.nrows;
     var diff = newdoclength - currmatlength;
 
     var newmaster = col(vector.toArray)
@@ -75,8 +75,10 @@ class Matrix {
 
       /*Take existing columns, augment them, and bind them to master
        First prepare each column*/	
-      var width = master(0,?).length;
-      
+      var width = master.ncols;
+
+      //newmaster = master on zeros(diff,width)
+      //print(newmaster)
       for (w <- 0 to width-1) {
 	/* Create array for each column of existing matrix*/
 	var currdoc_arr = new Array[Float] (0)
