@@ -14,6 +14,13 @@ import BIDMat.Plotting._
 
 
 
+/*TODOs
+-Need to randomly sample 9/10 of the data
+
+
+*/
+
+
 /*Library objects store a list of the files from a directory*/
 class Library(dir: String){
 	/*Get all documents in a list*/
@@ -66,7 +73,7 @@ class DocObject(file: String) {
 
 class Matrix {
 	Mat.noMKL=true 
-	val master = col(0);
+	var master = col(0);
 	def matrixsayhi(){
 		println(master);
 	}
@@ -75,6 +82,15 @@ class Matrix {
 		var newdoclength = vector.size;
 		var currmatlength = master(?,0).length;
 		var diff = newdoclength - currmatlength;
+
+		/* Take vector from DocObject and turn it into an Array*/
+		var vectorlist = new Array[Float] (0);
+		for (e <- vector){
+			var e_arr = Array(e.toFloat);
+			vectorlist = Array.concat(vectorlist,e_arr);
+		}
+		var newmaster = col(vectorlist);
+
 		/*If new doc is longer than existing matrix
 		we need to augment the existing matrix*/
 		if (diff > 0){
@@ -86,17 +102,9 @@ class Matrix {
 					var e_float = Array(e.toFloat);
 					diff_fill = Array.concat(diff_fill,e_float); 
 				}
-
-			/* Take vector from DocObject and turn it into an Array*/
-			var vectorlist = new Array[Float] (0);
-			for (e <- vector){
-				var e_arr = Array(e.toFloat);
-				vectorlist = Array.concat(vectorlist,e_arr);
-			}
 		
 			/*Take existing columns, augment them, and bind them to master
 			First prepare each column*/	
-			var newmaster = col(vectorlist);
 			var width = master(0,?).length;
 
 			for (w <- 0 to width-1) {
@@ -115,11 +123,13 @@ class Matrix {
 				println(newmaster.length)
 				print(newmaster);				
 				newmaster = newmaster\coltoadd;
-				println(newmaster);
-				
-			}
-			
+				println(newmaster);				
+			}	
 		}
+		if (diff == 0){
+			newmaster = newmaster\master
+		}
+	master = newmaster
 
 	}
 
@@ -158,6 +168,14 @@ object bayesBuild{
 				var add = currdoc.matrixExporter(dict);
 				mat.matrixUpdater(add)
 				
+				var d_master = 1\2\3 on 4\5\6
+				var d_newmaster = (8 on 9);
+				print(d_master)
+				print(d_newmaster)
+				d_newmaster = d_master\d_newmaster
+				print(d_newmaster)
+				d_master = d_newmaster
+				print(d_master)
 
 				currdoc.dictresetter(dict);
 
