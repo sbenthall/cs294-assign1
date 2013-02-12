@@ -83,19 +83,12 @@ class Matrix {
 	/* Create array for each column of existing matrix*/
 	var currdoc_arr = new Array[Float] (0)
 	for (x <- 0 to currmatlength-1){
-	  println("master is (x: "+x+", y: "+w+") = " +master(x,w));
 	  var e_arr = Array(master(x,w));
 	  currdoc_arr = Array.concat(currdoc_arr,e_arr);
 	}
-	println(currdoc_arr.getClass());
-	println(diff_fill.getClass());
         
 	var coltoadd = col(Array.concat(currdoc_arr,diff_fill));
-	println(coltoadd.length)
-	println(newmaster.length)
-	print(newmaster);				
 	newmaster = newmaster\coltoadd;
-	println(newmaster);				
       }	
     }
     if (diff == 0){
@@ -104,20 +97,6 @@ class Matrix {
     master = newmaster
     
   }
-  
-  /*for (x <- vectorlist){ println(x)}*/
-
-  
-  /*Pseudo-code:
-   Take input from doc
-   compare length with existing matrix
-   if it is longer{
-   take all existing rows of matrix
-   append length of vector - existing matrix row of 0s
-   bind the matrix together
-   }
-   
-   */	
 }
 
 object bayesBuild{
