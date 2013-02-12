@@ -58,22 +58,13 @@ class DocObject(file: String) {
 class Matrix {
   Mat.noMKL=true 
   var master = col(0);
-  def matrixsayhi(){
-    println("Hi! - Matrix");
-  }
 	
   def matrixUpdater(vector: Iterable[Int]) ={
     var newdoclength = vector.size;
     var currmatlength = master(?,0).length;
     var diff = newdoclength - currmatlength;
 
-    /* Take vector from DocObject and turn it into an Array*/
-    var vectorlist = new Array[Float] (0);
-    for (e <- vector){
-      var e_arr = Array(e.toFloat);
-      vectorlist = Array.concat(vectorlist,e_arr);
-    }
-    var newmaster = col(vectorlist);
+    var newmaster = col(vector.toArray)
 
     /*If new doc is longer than existing matrix
      we need to augment the existing matrix*/
