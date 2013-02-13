@@ -129,13 +129,20 @@ object bayesBuild{
         
         currdoc.dictresetter(dict);
       }
-    print(mat);
+
     return mat;
   }
 
   def main(args: Array[String]) {
-    var mats = classes.map(buildMatrix)
+    var mats = classes.map(buildMatrix);
 
+    var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
+    println(priors)
+    for(m <- mats){ 
+      println(m.loglikelihood)
+
+      
+    }
 
   }
 }
