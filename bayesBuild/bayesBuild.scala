@@ -166,15 +166,20 @@ object bayesBuild{
   //val main_dir = "../../review_polarity/txt_sentoken/pos"
   val main_dir = "Test";
   val classes = List("pos","neg");
-  def buildMatrix(c : String): Matrix = { 
+
+  //reuse this dictionary to keep vocabulary list
+
+      
+  def buildMatrix(): Matrix = { 
+    var dict = new Dictionary();
+    
+    var mat = new Matrix();
+    
+    for(c <- classes){ 
       val class_dir = main_dir + "/" + c;
       println(class_dir)
       val doclist = new File(class_dir).listFiles();
-
-      var dict = new Dictionary();
-      
-      var mat = new Matrix();
-
+    
       for (doc <- doclist){
         var pathlist = List(class_dir, doc.getName());
         var filepath = pathlist.mkString("/");
@@ -182,20 +187,34 @@ object bayesBuild{
         currdoc.dictUpdater(dict);
         var add = currdoc.matrixExporter(dict);
         mat.matrixUpdater(add)
-        
-        currdoc.dictresetter(dict);
+      
+        currdoc.dictresetter(dict);        
       }
-
+      print("bigmat width;")
+      println(mat.master.nc)
+    }
+    
     return mat;
   }
 
   def main(args: Array[String]) {
-    var mats = classes.map(buildMatrix);
+    val bigmat = buildMatrix();
+
+    println(bigmat.master.nc)
+    val pos_mat = new Matrix();
+    pos_mat.master = bigmat.master(?,0 to (bigmat.width / 2) - 1);
+    println(pos_mat.master)
+    val neg_mat = new Matrix();
+    neg_mat.master = bigmat.master(?, (bigmat.width / 2 to bigmat.width - 1));
+    println(neg_mat.master)
+    var mats = List(pos_mat,neg_mat)
+
     var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
     println(priors)
+
     val numPanes = 4
     val paneSize = 5
-    val windowPane = (x:Int) => irow((x - 1) * paneSize + 1 to x * paneSize)
+    val windowPane = (x:Int) => irow((x - 1) * paneSize to x * paneSize - 1)
     println(windowPane(4))
     for(m <- mats){ 
       println(m.loglikelihood(windowPane(3)))
