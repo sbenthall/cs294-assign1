@@ -59,15 +59,13 @@ class Matrix {
   Mat.noMKL=true 
   var master = col(0);
 
-  def likelihood() : FMat = {
-    //with laplace smoothing
-    print("have to split out stuff for validation")
-    return (sum(master,2) + 1) /@ (sum(sum(master)) + master.nr);
-  }
+  def loglikelihood(indices : IMat) : FMat = { 
+    //slice matrix
+    val sliced = master(?,indices)
 
-  def loglikelihood() : FMat = { 
-    return ln(this.likelihood())
+    val likelihoods = (sum(sliced,2) + 1) /@ (sum(sum(sliced)) + master.nr);
 
+    return ln(likelihoods)
   }
 
   def width : Int = { master.ncols }
