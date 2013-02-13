@@ -36,7 +36,7 @@ class DocObject(file: String) {
 	dict.master(word) = dict.master(word) + 1;
       }
       else {
-	dict.master = dict.master + (word -> 1)
+	dict.master += (word -> 1)
       }	
     }
   }
