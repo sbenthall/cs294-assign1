@@ -80,47 +80,22 @@ class Matrix {
   }
 }
 
-object bayesBuild{
-
-  //val main_dir = "../../review_polarity/txt_sentoken/pos"
-  val main_dir = "Test";
-  val classes = List("pos","neg");
-  def buildMatrix(c : String): Matrix = { 
-      val class_dir = main_dir + "/" + c;
-      println(class_dir)
-      val doclist = new File(class_dir).listFiles();
-
-      var dict = new Dictionary();
-      
-      var mat = new Matrix();
-
-      for (doc <- doclist){
-        var pathlist = List(class_dir, doc.getName());
-        var filepath = pathlist.mkString("/");
-        var currdoc = new DocObject(filepath);
-        currdoc.dictUpdater(dict);
-        var add = currdoc.matrixExporter(dict);
-        mat.matrixUpdater(add)
-        
-        currdoc.dictresetter(dict);
-      }
-
-    return mat;
-  }
-
-class Classifier {
+object Classifier {
   
   def scoremaker(testmat: FMat, loglikelihoods: FMat): FMat ={
     /*Unclear whether this matrix multiplication is most efficient.
     We could also transpose the testmat.*/
-    var liklihoods_t = loglikelihoods.t;
-    var resultmat = liklihoods_t*testmat;
+    var likelihoods_t = loglikelihoods.t;
+    println(likelihoods_t);
+    println(likelihoods_t.nc)
+    println(testmat.nr)
+    var resultmat = likelihoods_t*testmat;
     return resultmat;
   }
 
-  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): FMat = { 
-    var pos_vector = scoremaker(testmat,loglikelihoods(0)) + priors(0);
-    var neg_vector = scoremaker(testmat,loglikelihoods(1)) + priors(1);
+  def classify(testmat : FMat, logpriors: List[Double], loglikelihoods : List[BIDMat.FMat]): FMat = { 
+    var pos_vector = scoremaker(testmat,loglikelihoods(0)) + logpriors(0);
+    var neg_vector = scoremaker(testmat,loglikelihoods(1)) + logpriors(1);
     var result = pos_vector > neg_vector;
     return result;
   }
@@ -182,6 +157,33 @@ class FMeasurer {
   }
 }
 
+object bayesBuild{
+
+  //val main_dir = "../../review_polarity/txt_sentoken/pos"
+  val main_dir = "Test";
+  val classes = List("pos","neg");
+  def buildMatrix(c : String): Matrix = { 
+      val class_dir = main_dir + "/" + c;
+      println(class_dir)
+      val doclist = new File(class_dir).listFiles();
+
+      var dict = new Dictionary();
+      
+      var mat = new Matrix();
+
+      for (doc <- doclist){
+        var pathlist = List(class_dir, doc.getName());
+        var filepath = pathlist.mkString("/");
+        var currdoc = new DocObject(filepath);
+        currdoc.dictUpdater(dict);
+        var add = currdoc.matrixExporter(dict);
+        mat.matrixUpdater(add)
+        
+        currdoc.dictresetter(dict);
+      }
+
+    return mat;
+  }
 
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
@@ -196,15 +198,17 @@ class FMeasurer {
     }
 
     for(w <- 1 to numPanes){ 
-
+      //use same window on both data sets for 10-fold validation
       val train_window = ((1 to numPanes) diff List(w)).map(windowPane).reduceLeft((x,y) => x \ y);
+      val loglikelihoods = mats.map(_.loglikelihood(train_window))
+
       //these are always going to be ln(.5) each...
-      val alldocs = mats.map(_.width).sum;
+      //yeah ok this is unnecessary
+      var logpriors = List(math.log(.5),math.log(.5));
 
-      var logpriors = List(ln(.5),ln(.5));
-      println(logpriors)
+      val test_window = windowPane(w);
+      mats.map(x => Classifier.classify(x.master(?,test_window),logpriors,loglikelihoods));
 
-      val test_window = windowPane(w)
 
       println(mats.map(x => x.loglikelihood(train_window)));
 
