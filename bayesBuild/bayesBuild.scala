@@ -59,8 +59,10 @@ class Matrix {
   Mat.noMKL=true 
   var master = col(0);
 
-  def likelihood() : FMat = { 
-    return sum(master,2) /@ sum(sum(master));
+  def likelihood() : FMat = {
+    //with laplace smoothing
+    print("have to split out stuff for validation")
+    return (sum(master,2) + 1) /@ (sum(sum(master)) + master.nr);
   }
 
   def loglikelihood() : FMat = { 
@@ -135,7 +137,7 @@ object bayesBuild{
 
   /* classifier takes in a document and the likelihood vectors
    * and returns a classification (an index into the list of loglihoods*/
-  def classify(indices : FMat, mat : Matrix, priors: List[Double], loglikelihoods : List[BIDMat.FMat]]): Int = { 
+  def classify(indices : FMat, mat : Matrix, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): Int = { 
   
      return 0;
   }
