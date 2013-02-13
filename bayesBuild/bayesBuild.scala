@@ -133,6 +133,13 @@ object bayesBuild{
     return mat;
   }
 
+  /* classifier takes in a document and the likelihood vectors
+   * and returns a classification (an index into the list of loglihoods*/
+  def classify(range : Range, mat : Matrix, priors: List[Double], loglikelihoods : List[BIDMat.FMat]]): Int = { 
+  
+     return 0;
+  }
+
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
 
