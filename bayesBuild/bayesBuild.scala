@@ -58,6 +58,17 @@ class DocObject(file: String) {
 class Matrix {
   Mat.noMKL=true 
   var master = col(0);
+
+  def likelihood() : FMat = { 
+    return sum(master,2) /@ sum(sum(master));
+  }
+
+  def loglikelihood() : FMat = { 
+    return ln(this.likelihood())
+
+  }
+
+  def width : Int = { master.ncols }
 	
   def matrixUpdater(vector: Iterable[Int]) ={
     var newdoclength = vector.size;
@@ -72,10 +83,6 @@ class Matrix {
       println("diff = "+diff)
       /*Create filler array to augment existing columns*/
       var diff_fill = new Array[Float](diff)
-
-      /*Take existing columns, augment them, and bind them to master
-       First prepare each column*/	
-      var width = master.ncols;
 
       //newmaster = master on zeros(diff,width)
       //print(newmaster)
