@@ -63,6 +63,7 @@ class Matrix {
     //slice matrix
     val sliced = master(?,indices)
 
+    //compute with laplace smoothing
     val likelihoods = (sum(sliced,2) + 1) /@ (sum(sum(sliced)) + master.nr);
 
     return ln(likelihoods)
