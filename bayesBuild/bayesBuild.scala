@@ -107,12 +107,13 @@ class Matrix {
 }
 
 object bayesBuild{
-  //val main_dir = "../../review_polarity/txt_sentoken/pos"
-  val main_dir = "/home/sb/ischool/cs294/assign1/bayesBuild/Test/";
+  //val main_dir = "../src/main/resources/txt_sentoken"
+  val main_dir = "/home/sb/ischool/cs294/assign1/bayesBuild/Test";
   val classes = List("neg","pos");
 
   def buildMatrix(c : String): Matrix = { 
       val class_dir = main_dir + "/" + c;
+      print(class_dir)
       val doclist = new File(class_dir).listFiles();
 
       var dict = new Dictionary();
@@ -135,19 +136,33 @@ object bayesBuild{
 
   /* classifier takes in a document and the likelihood vectors
    * and returns a classification (an index into the list of loglihoods*/
-  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]]): Int = { 
+  def classify(testmat : FMat, priors: List[Float], loglikelihoods : List[BIDMat.FMat]): Int = { 
      return 0;
   }
 
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
+    val numPanes = 4
+    val paneSize = 5
+    val windowPane = (x:Int) => irow((x - 1) * paneSize + 1 to x * paneSize)
 
-    var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
-    println(priors)
+    print(windowPane(4))
+
     for(m <- mats){ 
-      println(m.loglikelihood)
+      println(m.loglikelihood(windowPane(3)))
+    }
 
-      
+    for(w <- 1 to numPanes){ 
+
+      var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
+      println(priors)
+
+      val train_window = ((1 to numPanes) diff List(w)).map(windowPane).reduceLeft((x,y) => x \ y);
+      val test_window = windowPane(w)
+
+      println(mats.map(x => x.loglikelihood(train_window)));
+
+      println(classify(windowPane(w), priors, mats.map(x => x.loglikelihood(windowPane(1)))));
     }
 
   }
