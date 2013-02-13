@@ -108,20 +108,30 @@ object bayesBuild{
     return mat;
   }
 
-  /* classifier takes in a document and the likelihood vectors
-   * and returns a classification (an index into the list of loglihoods*/
-  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): Int = { 
-     return 0;
+class Classifier {
+  
+  def scoremaker(testmat: FMat, loglikelihoods: FMat): FMat ={
+    /*Unclear whether this matrix multiplication is most efficient.
+    We could also transpose the testmat.*/
+    var liklihoods_t = loglikelihoods.t;
+    var resultmat = liklihoods_t*testmat;
+    return resultmat;
   }
+
+  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): FMat = { 
+    var pos_vector = scoremaker(testmat,loglikelihoods(0)) + priors(0);
+    var neg_vector = scoremaker(testmat,loglikelihoods(1)) + priors(1);
+    var result = pos_vector > neg_vector;
+    return result;
+  }
+  
+}
+
+
+
 
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
-
-    /*YO SEBASTIAN!!!!!
-
-    I DON'T GET HOW THIS CODE CALCULATING THE PRIOR WORKS.
-
-    But make sure it calculates the log of the probability*/
     var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
     println(priors)
     val numPanes = 4
