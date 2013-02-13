@@ -63,6 +63,7 @@ class Matrix {
     //slice matrix
     val sliced = master(?,indices)
 
+    //compute with laplace smoothing
     val likelihoods = (sum(sliced,2) + 1) /@ (sum(sum(sliced)) + master.nr);
 
     return ln(likelihoods)
@@ -75,34 +76,7 @@ class Matrix {
     var currmatlength = master.nrows;
     var diff = newdoclength - currmatlength;
 
-    var newmaster = col(vector.toArray)
-
-    /*If new doc is longer than existing matrix
-     we need to augment the existing matrix*/
-    if (diff > 0){
-      println("diff = "+diff)
-      /*Create filler array to augment existing columns*/
-      var diff_fill = new Array[Float](diff)
-
-      //newmaster = master on zeros(diff,width)
-      //print(newmaster)
-      for (w <- 0 to width-1) {
-	/* Create array for each column of existing matrix*/
-	var currdoc_arr = new Array[Float] (0)
-	for (x <- 0 to currmatlength-1){
-	  var e_arr = Array(master(x,w));
-	  currdoc_arr = Array.concat(currdoc_arr,e_arr);
-	}
-        
-	var coltoadd = col(Array.concat(currdoc_arr,diff_fill));
-	newmaster = newmaster\coltoadd;
-      }	
-    }
-    if (diff == 0){
-      newmaster = newmaster\master
-    }
-    master = newmaster
-    
+    master = col(vector.toArray) \ (master on zeros(diff,width))
   }
 }
 
@@ -113,7 +87,7 @@ object bayesBuild{
   val classes = List("pos","neg");
   def buildMatrix(c : String): Matrix = { 
       val class_dir = main_dir + "/" + c;
-      print(class_dir)
+      println(class_dir)
       val doclist = new File(class_dir).listFiles();
 
       var dict = new Dictionary();
@@ -153,23 +127,25 @@ object bayesBuild{
     val numPanes = 4
     val paneSize = 5
     val windowPane = (x:Int) => irow((x - 1) * paneSize + 1 to x * paneSize)
-
-    print(windowPane(4))
+    println(windowPane(4))
     for(m <- mats){ 
       println(m.loglikelihood(windowPane(3)))
     }
 
     for(w <- 1 to numPanes){ 
 
-      var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
-      println(priors)
-
       val train_window = ((1 to numPanes) diff List(w)).map(windowPane).reduceLeft((x,y) => x \ y);
+      //these are always going to be ln(.5) each...
+      val alldocs = mats.map(_.width).sum;
+
+      var logpriors = List(ln(.5),ln(.5));
+      println(logpriors)
+
       val test_window = windowPane(w)
 
       println(mats.map(x => x.loglikelihood(train_window)));
 
-      println(classify(windowPane(w), priors, mats.map(x => x.loglikelihood(windowPane(1)))));
+      //println(classify(windowPane(w), logpriors, mats.map(x => x.loglikelihood(windowPane(1)))));
     }
 
   }
