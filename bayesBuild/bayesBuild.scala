@@ -128,15 +128,18 @@ object bayesBuild{
 
     for(w <- 1 to numPanes){ 
 
-      var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
-      println(priors)
-
       val train_window = ((1 to numPanes) diff List(w)).map(windowPane).reduceLeft((x,y) => x \ y);
+      //these are always going to be ln(.5) each...
+      val alldocs = mats.map(_.width).sum;
+
+      var logpriors = List(ln(.5),ln(.5));
+      println(logpriors)
+
       val test_window = windowPane(w)
 
       println(mats.map(x => x.loglikelihood(train_window)));
 
-      println(classify(windowPane(w), priors, mats.map(x => x.loglikelihood(windowPane(1)))));
+      //println(classify(windowPane(w), logpriors, mats.map(x => x.loglikelihood(windowPane(1)))));
     }
 
   }
