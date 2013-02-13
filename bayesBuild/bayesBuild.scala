@@ -59,13 +59,13 @@ class Matrix {
   Mat.noMKL=true 
   var master = col(0);
 
-  def likelihood() : FMat = { 
-    return sum(master,2) /@ sum(sum(master));
-  }
+  def loglikelihood(indices : IMat) : FMat = { 
+    //slice matrix
+    val sliced = master(?,indices)
 
-  def loglikelihood() : FMat = { 
-    return ln(this.likelihood())
+    val likelihoods = (sum(sliced,2) + 1) /@ (sum(sum(sliced)) + master.nr);
 
+    return ln(likelihoods)
   }
 
   def width : Int = { master.ncols }
@@ -107,12 +107,13 @@ class Matrix {
 }
 
 object bayesBuild{
+
   //val main_dir = "../../review_polarity/txt_sentoken/pos"
   val main_dir = "Test";
   val classes = List("pos","neg");
-
   def buildMatrix(c : String): Matrix = { 
       val class_dir = main_dir + "/" + c;
+      print(class_dir)
       val doclist = new File(class_dir).listFiles();
 
       var dict = new Dictionary();
@@ -136,13 +137,12 @@ object bayesBuild{
   /* classifier takes in a document and the likelihood vectors
    * and returns a classification (an index into the list of loglihoods*/
   def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): Int = { 
-    
-
      return 0;
   }
 
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
+
     /*YO SEBASTIAN!!!!!
 
     I DON'T GET HOW THIS CODE CALCULATING THE PRIOR WORKS.
@@ -150,10 +150,26 @@ object bayesBuild{
     But make sure it calculates the log of the probability*/
     var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
     println(priors)
-    for(m <- mats){ 
-      println(m.loglikelihood)
+    val numPanes = 4
+    val paneSize = 5
+    val windowPane = (x:Int) => irow((x - 1) * paneSize + 1 to x * paneSize)
 
-      
+    print(windowPane(4))
+    for(m <- mats){ 
+      println(m.loglikelihood(windowPane(3)))
+    }
+
+    for(w <- 1 to numPanes){ 
+
+      var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
+      println(priors)
+
+      val train_window = ((1 to numPanes) diff List(w)).map(windowPane).reduceLeft((x,y) => x \ y);
+      val test_window = windowPane(w)
+
+      println(mats.map(x => x.loglikelihood(train_window)));
+
+      println(classify(windowPane(w), priors, mats.map(x => x.loglikelihood(windowPane(1)))));
     }
 
   }
