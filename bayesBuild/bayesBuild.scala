@@ -57,7 +57,9 @@ class DocObject(file: String) {
 
 class Matrix {
   Mat.noMKL=true 
-  var master = col(0);
+
+  //TODO: make sparse!
+  var master : FMat = null;
 
   def loglikelihood(indices : IMat) : FMat = { 
     //slice matrix
@@ -72,11 +74,13 @@ class Matrix {
   def width : Int = { master.ncols }
 	
   def matrixUpdater(vector: Iterable[Int]) ={
-    var newdoclength = vector.size;
-    var currmatlength = master.nrows;
-    var diff = newdoclength - currmatlength;
+    if(master == null){
+      master = col(vector.toArray)
+    } else { 
+      var diff = vector.size - master.nrows;
 
-    master = col(vector.toArray) \ (master on zeros(diff,width))
+      master = (master on zeros(diff,width)) \ col(vector.toArray);
+    }    
   }
 }
 
