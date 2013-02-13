@@ -59,7 +59,7 @@ class Matrix {
   Mat.noMKL=true 
 
   //TODO: make sparse!
-  var master : FMat = null;
+  var master : SMat = null;
 
   def loglikelihood(indices : IMat) : FMat = { 
     //slice matrix
@@ -75,11 +75,11 @@ class Matrix {
 	
   def matrixUpdater(vector: Iterable[Int]) ={
     if(master == null){
-      master = col(vector.toArray)
+      master = sparse(col(vector.toArray))
     } else { 
       var diff = vector.size - master.nrows;
 
-      master = (master on zeros(diff,width)) \ col(vector.toArray);
+      master = (master on sparse(zeros(diff,width))) \ sparse(col(vector.toArray));
     }    
   }
 }
