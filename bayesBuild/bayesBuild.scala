@@ -108,8 +108,8 @@ class Matrix {
 
 object bayesBuild{
   //val main_dir = "../../review_polarity/txt_sentoken/pos"
-  val main_dir = "/home/sb/ischool/cs294/assign1/bayesBuild/Test/";
-  val classes = List("neg","pos");
+  val main_dir = "Test";
+  val classes = List("pos","neg");
 
   def buildMatrix(c : String): Matrix = { 
       val class_dir = main_dir + "/" + c;
@@ -135,14 +135,19 @@ object bayesBuild{
 
   /* classifier takes in a document and the likelihood vectors
    * and returns a classification (an index into the list of loglihoods*/
-  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]]): Int = { 
-  
+  def classify(testmat : FMat, priors: List[Double], loglikelihoods : List[BIDMat.FMat]): Int = { 
+    
+
      return 0;
   }
 
   def main(args: Array[String]) {
     var mats = classes.map(buildMatrix);
+    /*YO SEBASTIAN!!!!!
 
+    I DON'T GET HOW THIS CODE CALCULATING THE PRIOR WORKS.
+
+    But make sure it calculates the log of the probability*/
     var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
     println(priors)
     for(m <- mats){ 
