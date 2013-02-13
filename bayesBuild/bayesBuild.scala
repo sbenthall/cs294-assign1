@@ -103,61 +103,6 @@ object Classifier {
   
 }
 
-class FMeasurer {
-  /* The methods of this class assume that the matrices fed to them are resultmats from the
-  classify function of the Classifier class. It assumes that the parameter passed as 'posmat' 
-  is the vector of predicted valuesof documents that IN REALITY are positive. Likewise, 'negmat'
-  is presumed to be the same for documents that IN REALITY are negative.
-  */
-
-  def trueposcalc(posmat: FMat, negmat: FMat){
-    /*to get tp, I need to know from testset how it's made. this takes in result from classifier
-    I need to count the number of 1's that should be 1 and 0s that should be 0
-
-    Steps:
-    count how many 1s are in posmat, how many 0s are in negmat
-    sum and return
-    */
-  }
-
-  def falsenegcalc(posmat: FMat, negmat: FMat){
-    /*to get fn... what is a false negative in this case? It's something that it says is false
-    but is really true. what does it mean to be false? Says it's negative. But really it's positive.
-    So I need to count these. This is a count of the entries in the resultmat that are 0 when 
-    they should be 1 or 1 when they should be 0.
-    
-    Steps:
-
-    Count up 0s in posmat
-    Count up 1s in negmat 
-    sum and return
-    */
-  }
-
-  def falseposcalc(posmat: FMat, negmat: FMat){
-    /* to get fp, count 1s in result mat that should be 0's (or 0s that should be 1)
-
-    Steps:
-    Count up 1s in posmat
-    Count up 0s in negmat
-    sum and return
-    */
-  }
-
-  
-  def calcF_1(){
-    /* F = 2PR/(P+R)
-    PR = tp/(tp + fp)
-    R = tp/(tp + fn)
-    
-  Steps:
-  use other functions in class to calculate tp,fn,fp
-  Calculate PR, R, and finally F
-  return F
-    */
-  }
-}
-
 object bayesBuild{
 
   //val main_dir = "../../review_polarity/txt_sentoken/pos"
@@ -191,6 +136,28 @@ object bayesBuild{
     return mat;
   }
 
+  /* pos_res = results of classification on documents that are actually positive
+   * neg_res = results of classification on documents that are actually negative
+   * F = 2PR/(P+R)
+     PR = tp/(tp + fp)
+     R = tp/(tp + fn)
+    
+    Steps:
+    use other functions in class to calculate tp,fn,fp
+    Calculate PR, R, and finally F
+    return F
+   */
+  def calcF_1(pos_res : FMat, neg_res : FMat) : Float = {
+    val tp = sum(pos_res)(0);
+    val fp = sum(neg_res)(0);
+    val fn = sum(1 - pos_res)(0);
+
+    val p = tp / (tp + fp);
+    val r = tp / (tp + fn);
+
+    return (2 * p * r) / (p + r);
+  }
+
   def main(args: Array[String]) {
     val bigmat = buildMatrix();
 
@@ -208,10 +175,8 @@ object bayesBuild{
     val numPanes = 4
     val paneSize = 5
     val windowPane = (x:Int) => irow((x - 1) * paneSize to x * paneSize - 1)
-    println(windowPane(4))
-    for(m <- mats){ 
-      println(m.loglikelihood(windowPane(3)))
-    }
+
+    var f1s : List[Float] = List();
 
     for(w <- 1 to numPanes){ 
       //use same window on both data sets for 10-fold validation
@@ -223,13 +188,13 @@ object bayesBuild{
       var logpriors = List(math.log(.5),math.log(.5));
 
       val test_window = windowPane(w);
-      mats.map(x => Classifier.classify(x.master(?,test_window),logpriors,loglikelihoods));
+      val classified = mats.map(x => Classifier.classify(x.master(?,test_window),logpriors,loglikelihoods));
 
-
-      println(mats.map(x => x.loglikelihood(train_window)));
-
-      //println(classify(windowPane(w), logpriors, mats.map(x => x.loglikelihood(windowPane(1)))));
+      f1s = calcF_1(classified(0),classified(1)) :: f1s;
     }
 
+    println(f1s);
+    val avg_f1 = f1s.sum / f1s.length;
+    println(avg_f1);
   }
 }
