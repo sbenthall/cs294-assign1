@@ -75,34 +75,7 @@ class Matrix {
     var currmatlength = master.nrows;
     var diff = newdoclength - currmatlength;
 
-    var newmaster = col(vector.toArray)
-
-    /*If new doc is longer than existing matrix
-     we need to augment the existing matrix*/
-    if (diff > 0){
-      println("diff = "+diff)
-      /*Create filler array to augment existing columns*/
-      var diff_fill = new Array[Float](diff)
-
-      //newmaster = master on zeros(diff,width)
-      //print(newmaster)
-      for (w <- 0 to width-1) {
-	/* Create array for each column of existing matrix*/
-	var currdoc_arr = new Array[Float] (0)
-	for (x <- 0 to currmatlength-1){
-	  var e_arr = Array(master(x,w));
-	  currdoc_arr = Array.concat(currdoc_arr,e_arr);
-	}
-        
-	var coltoadd = col(Array.concat(currdoc_arr,diff_fill));
-	newmaster = newmaster\coltoadd;
-      }	
-    }
-    if (diff == 0){
-      newmaster = newmaster\master
-    }
-    master = newmaster
-    
+    master = col(vector.toArray) \ (master on zeros(diff,width))
   }
 }
 
