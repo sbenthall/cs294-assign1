@@ -90,9 +90,6 @@ object Classifier {
     /*Unclear whether this matrix multiplication is most efficient.
     We could also transpose the testmat.*/
     var likelihoods_t = loglikelihoods.t;
-    println(likelihoods_t);
-    println(likelihoods_t.nc)
-    println(testmat.nr)
     var resultmat = likelihoods_t*testmat;
     return resultmat;
   }
@@ -177,7 +174,6 @@ object bayesBuild{
     
     for(c <- classes){ 
       val class_dir = main_dir + "/" + c;
-      println(class_dir)
       val doclist = new File(class_dir).listFiles();
     
       for (doc <- doclist){
@@ -190,8 +186,6 @@ object bayesBuild{
       
         currdoc.dictresetter(dict);        
       }
-      print("bigmat width;")
-      println(mat.master.nc)
     }
     
     return mat;
@@ -200,18 +194,17 @@ object bayesBuild{
   def main(args: Array[String]) {
     val bigmat = buildMatrix();
 
-    println(bigmat.master.nc)
     val pos_mat = new Matrix();
     pos_mat.master = bigmat.master(?,0 to (bigmat.width / 2) - 1);
-    println(pos_mat.master)
+
     val neg_mat = new Matrix();
     neg_mat.master = bigmat.master(?, (bigmat.width / 2 to bigmat.width - 1));
-    println(neg_mat.master)
+
     var mats = List(pos_mat,neg_mat)
 
     var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
-    println(priors)
 
+    // parameters for n-fold validation
     val numPanes = 4
     val paneSize = 5
     val windowPane = (x:Int) => irow((x - 1) * paneSize to x * paneSize - 1)
