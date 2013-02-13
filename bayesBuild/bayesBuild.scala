@@ -134,7 +134,7 @@ class FMeasurer {
   is presumed to be the same for documents that IN REALITY are negative.
   */
 
-  def trueposcalc(posmat: FMat, negmat: Fmat){
+  def trueposcalc(posmat: FMat, negmat: FMat){
     /*to get tp, I need to know from testset how it's made. this takes in result from classifier
     I need to count the number of 1's that should be 1 and 0s that should be 0
 
@@ -142,8 +142,9 @@ class FMeasurer {
     count how many 1s are in posmat, how many 0s are in negmat
     sum and return
     */
+  }
 
-  def falsenegcalc(posmat: FMat, negmat: Fmat){
+  def falsenegcalc(posmat: FMat, negmat: FMat){
     /*to get fn... what is a false negative in this case? It's something that it says is false
     but is really true. what does it mean to be false? Says it's negative. But really it's positive.
     So I need to count these. This is a count of the entries in the resultmat that are 0 when 
@@ -157,7 +158,7 @@ class FMeasurer {
     */
   }
 
-  def falseposcalc(posmat: FMat, negmat: Fmat){
+  def falseposcalc(posmat: FMat, negmat: FMat){
     /* to get fp, count 1s in result mat that should be 0's (or 0s that should be 1)
 
     Steps:
