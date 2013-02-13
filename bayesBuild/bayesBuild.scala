@@ -86,7 +86,7 @@ object bayesBuild{
 
   def buildMatrix(c : String): Matrix = { 
       val class_dir = main_dir + "/" + c;
-      print(class_dir)
+      println(class_dir)
       val doclist = new File(class_dir).listFiles();
 
       var dict = new Dictionary();
@@ -119,7 +119,7 @@ object bayesBuild{
     val paneSize = 5
     val windowPane = (x:Int) => irow((x - 1) * paneSize + 1 to x * paneSize)
 
-    print(windowPane(4))
+    println(windowPane(4))
 
     for(m <- mats){ 
       println(m.loglikelihood(windowPane(3)))
