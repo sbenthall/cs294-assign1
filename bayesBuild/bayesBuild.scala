@@ -104,8 +104,8 @@ object Classifier {
 
 object bayesBuild{
 
-  //val main_dir = "../../review_polarity/txt_sentoken/pos"
-  val main_dir = "Test";
+  val main_dir = "../src/main/resources/txt_sentoken/";
+  //val main_dir = "Test";
   val classes = List("pos","neg");
 
   //reuse this dictionary to keep vocabulary list
