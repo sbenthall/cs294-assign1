@@ -159,6 +159,7 @@ object bayesBuild{
   }
 
   def main(args: Array[String]) {
+    flip;
     val bigmat = buildMatrix();
 
     val pos_mat = new Matrix();
@@ -188,6 +189,7 @@ object bayesBuild{
       var logpriors = List(math.log(.5),math.log(.5));
 
       val test_window = windowPane(w);
+
       val classified = mats.map(x => Classifier.classify(x.master(?,test_window),logpriors,loglikelihoods));
 
       f1s = calcF_1(classified(0),classified(1)) :: f1s;
@@ -196,5 +198,9 @@ object bayesBuild{
     println(f1s);
     val avg_f1 = f1s.sum / f1s.length;
     println(avg_f1);
+
+    //compute time in gigaflops
+    val ff = gflop;
+    println(ff);
   }
 }
