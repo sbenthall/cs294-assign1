@@ -174,8 +174,8 @@ object bayesBuild{
     var mats = List(pos_mat,neg_mat)
 
     // parameters for n-fold validation
-    val numPanes = 4
-    val paneSize = 5
+    val numPanes = 10
+    val paneSize = 100
     val windowPane = (x:Int) => irow((x - 1) * paneSize to x * paneSize - 1)
 
     //collect F1 measurements in this list
