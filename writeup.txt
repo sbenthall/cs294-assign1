@@ -1,0 +1,23 @@
+cs294 Assignment 1
+Sebastian Benthall and David Greis
+====================================
+
+Description of steps
+--------------------
+
+We did not do any of the extra credit work.  The steps in our solution are:
+
+* Looping through the files in each category to build a sparse matrix of features, with columns as documents and rows as vocabulary entries.  This step involved dynamically resizing the matrix for each new document, since because of power law features each document would add new words to the vocabulary.
+
+* As per the multinomial model from "Introduction to Information Retrieval", we counted multiple occurences of a feature in a document.
+
+* For the 10-fold cross-validation, we used the data breakdown referred to in the data's README.  We used data labeled cv000 - cv099 for fold 1, cv100 - cv199 for fold 2, etc.
+
+* We used Laplace smoothing when computing (log)likelihood values for each feature.  
+
+Performance
+-----------
+
+Our implementation performed with an average F1 value of .928.
+
+It takes 33.367 seconds to run, at 4.91602E-4 gigaflops.
