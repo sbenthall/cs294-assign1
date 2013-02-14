@@ -86,7 +86,7 @@ class Matrix {
 
 object Classifier {
   
-  def scoremaker(testmat: FMat, loglikelihoods: FMat): FMat ={
+  def scoremaker(testmat: SMat, loglikelihoods: FMat): FMat ={
     /*Unclear whether this matrix multiplication is most efficient.
     We could also transpose the testmat.*/
     var likelihoods_t = loglikelihoods.t;
@@ -94,7 +94,7 @@ object Classifier {
     return resultmat;
   }
 
-  def classify(testmat : FMat, logpriors: List[Double], loglikelihoods : List[BIDMat.FMat]): FMat = { 
+  def classify(testmat : SMat, logpriors: List[Double], loglikelihoods : List[BIDMat.FMat]): FMat = { 
     var pos_vector = scoremaker(testmat,loglikelihoods(0)) + logpriors(0);
     var neg_vector = scoremaker(testmat,loglikelihoods(1)) + logpriors(1);
     var result = pos_vector > neg_vector;
