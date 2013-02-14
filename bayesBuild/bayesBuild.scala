@@ -58,7 +58,6 @@ class DocObject(file: String) {
 class Matrix {
   Mat.noMKL=true 
 
-  //TODO: make sparse!
   var master : SMat = null;
 
   def loglikelihood(indices : IMat) : FMat = { 
@@ -85,7 +84,7 @@ class Matrix {
 }
 
 object Classifier {
-  
+  // this object bundles methods used in the classifier
   def scoremaker(testmat: SMat, loglikelihoods: FMat): FMat ={
     /*Unclear whether this matrix multiplication is most efficient.
     We could also transpose the testmat.*/
@@ -117,6 +116,8 @@ object bayesBuild{
     
     var mat = new Matrix();
     
+    // for each class, loop through files and
+    // construct matrix accordingingly
     for(c <- classes){ 
       val class_dir = main_dir + "/" + c;
       val doclist = new File(class_dir).listFiles();
@@ -160,8 +161,10 @@ object bayesBuild{
 
   def main(args: Array[String]) {
     flip;
+    //build feature matrix from documents in dataset
     val bigmat = buildMatrix();
 
+    //split into positive and negative matrices
     val pos_mat = new Matrix();
     pos_mat.master = bigmat.master(?,0 to (bigmat.width / 2) - 1);
 
@@ -170,13 +173,12 @@ object bayesBuild{
 
     var mats = List(pos_mat,neg_mat)
 
-    var priors = mats.map( _.width.toFloat / mats.map(_.width).sum);
-
     // parameters for n-fold validation
     val numPanes = 4
     val paneSize = 5
     val windowPane = (x:Int) => irow((x - 1) * paneSize to x * paneSize - 1)
 
+    //collect F1 measurements in this list
     var f1s : List[Float] = List();
 
     for(w <- 1 to numPanes){ 
@@ -187,11 +189,14 @@ object bayesBuild{
       //these are always going to be ln(.5) each...
       //yeah ok this is unnecessary
       var logpriors = List(math.log(.5),math.log(.5));
-
+      
+      //window for the test data
       val test_window = windowPane(w);
 
+      //do the classification
       val classified = mats.map(x => Classifier.classify(x.master(?,test_window),logpriors,loglikelihoods));
 
+      //compute and store F1 measure
       f1s = calcF_1(classified(0),classified(1)) :: f1s;
     }
 
