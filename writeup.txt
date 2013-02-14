@@ -13,7 +13,9 @@ We did not do any of the extra credit work.  The steps in our solution are:
 
 * For the 10-fold cross-validation, we used the data breakdown referred to in the data's README.  We used data labeled cv000 - cv099 for fold 1, cv100 - cv199 for fold 2, etc.
 
-* We used Laplace smoothing when computing (log)likelihood values for each feature.  
+* We used Laplace smoothing when computing (log)likelihood values for each feature.
+
+* After classifying each fold, we computed the F1 performance measure.  We averaged this measure across folds for better measure of performance.
 
 Performance
 -----------
